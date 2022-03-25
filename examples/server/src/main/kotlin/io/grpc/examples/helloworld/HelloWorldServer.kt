@@ -18,11 +18,14 @@ package io.grpc.examples.helloworld
 
 import io.grpc.Server
 import io.grpc.ServerBuilder
+import io.grpc.StatusRuntimeException
+import io.grpc.stub.StreamObserver
 
 class HelloWorldServer(private val port: Int) {
     val server: Server = ServerBuilder
         .forPort(port)
         .addService(HelloWorldService())
+//        .addService(HellWorldRetryService())
         .build()
 
     fun start() {
@@ -45,8 +48,25 @@ class HelloWorldServer(private val port: Int) {
         server.awaitTermination()
     }
 
+    internal class HellWorldRetryService : GreeterGrpc.GreeterImplBase() {
+
+        var count = 0
+
+        override fun sayHello(request: HelloRequest?, responseObserver: StreamObserver<HelloReply>?) {
+            count++
+            println("come in $count")
+            responseObserver!!.onError(io.grpc.Status.UNAVAILABLE
+                .withDescription("Greeter temporarily unavailable...").asRuntimeException())
+        }
+    }
+
     internal class HelloWorldService : GreeterGrpcKt.GreeterCoroutineImplBase() {
+
+        private var count = 0
+
         override suspend fun sayHello(request: HelloRequest) = helloReply {
+            println(count++)
+            throw StatusRuntimeException(io.grpc.Status.UNAVAILABLE)
             message = "Hello ${request.name}"
         }
     }

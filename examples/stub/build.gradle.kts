@@ -22,8 +22,6 @@ dependencies {
     api("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
 }
 
-/*
-// this makes it so IntelliJ picks up the sources but then ktlint complains
 
 sourceSets {
     val main by getting { }
@@ -32,7 +30,7 @@ sourceSets {
     main.java.srcDirs("build/generated/source/proto/main/kotlin")
     main.java.srcDirs("build/generated/source/proto/main/grpckt")
 }
- */
+
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8

@@ -10,6 +10,7 @@ java {
 
 dependencies {
     implementation(project(":stub"))
+    implementation(project(":stub-android"))
     runtimeOnly("io.grpc:grpc-netty:${rootProject.ext["grpcVersion"]}")
 }
 
