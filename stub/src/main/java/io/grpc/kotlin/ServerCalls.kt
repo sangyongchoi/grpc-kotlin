@@ -252,11 +252,12 @@ object ServerCalls {
       }.exceptionOrNull()
       // check headers again once we're done collecting the response flow - if we received
       // no elements or threw an exception, then we wouldn't have sent them
-      if (headersSent.compareAndSet(false, true)) {
+      if (failure != null && headersSent.compareAndSet(false, true)) {
         mutex.withLock {
           call.sendHeaders(GrpcMetadata())
         }
       }
+
       val closeStatus = when (failure) {
         null -> Status.OK
         is CancellationException -> Status.CANCELLED.withCause(failure)
